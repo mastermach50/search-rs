@@ -1,11 +1,12 @@
 [package]
 name = "search-rs"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["MasterMach50"]
+repository = "https://github.com/MasterMach50/search-rs"
 
 [[bin]]
-name = "garden"
+name = "search"
 path = "src/main.rs"
 
 [dependencies]

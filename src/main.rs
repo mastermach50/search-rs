@@ -10,6 +10,7 @@ struct Pref {
 
 fn help () {
 println!("Search [by MasterMach50]
+https://github.com/MasterMach50/search-rs
 
 Search for files or directories recursively.
 
