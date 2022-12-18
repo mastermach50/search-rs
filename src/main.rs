@@ -1,5 +1,7 @@
-use std::{env, process::exit};
+use std::{env, process::exit, path::PathBuf};
 use glob::{glob_with, MatchOptions};
+use colored::*;
+use regex::Regex;
 
 struct Pref {
     case_sensitive: bool,
@@ -33,11 +35,15 @@ Options:
     exit(0);
 }
 
+
+
 fn show_version() {
     let version = env!("CARGO_PKG_VERSION");
-    println!("Search by MasterMach50 | version {}", version);
+    println!("Search by MasterMach50 | version {}", version.blue());
     exit(0)
 }
+
+
 
 fn parse_preferences(pref_keys: &Vec<String>) -> Pref {
     // Parse preferences
@@ -74,6 +80,32 @@ fn parse_preferences(pref_keys: &Vec<String>) -> Pref {
     return current_prefs;
 }
 
+
+
+fn print_path(path:PathBuf, current_prefs: &Pref, search_term: &String) {
+    // Create a regex using the search term
+    let re = Regex::new(&format!("(?i){}", &search_term)).unwrap();
+
+    // Match the section in the path string withe the search term using the regex
+    let path_str = &path.display().to_string();
+    let section = re.find(path_str).unwrap().as_str();
+
+    // Replace the matched section with a colorized version
+    let newpath = &path.display().to_string()
+        .replace(&section.clone(), &section.clone().blue().to_string());
+
+    if path.is_dir() {
+        if current_prefs.show_dirs {println!("DIR  | {}", newpath)}
+    } else if path.is_symlink() {
+        if current_prefs.show_files {println!("LINK | {}", newpath)}
+    } else if path.is_file(){
+        if current_prefs.show_files {println!("FILE | {}", newpath)}
+    } else {
+        println!("???? | {}", newpath)
+    }
+}
+
+
 fn main() {
 
     let args: Vec<String> = env::args().collect();
@@ -89,6 +121,7 @@ fn main() {
             command.push(String::from(arg))
         }
     }
+    
     if command.len() == 1 {
         command.insert(1, String::from("."));
         command.insert(2, String::from(""));
@@ -114,7 +147,8 @@ fn main() {
 
 
     // Get paths and search for file
-    println!("[ DIR = {} | SEARCH = {} | PREF = {} ]", &search_path, &search_term, &pref_keys.concat());
+    let header = String::from(format!("[ DIR = {} | SEARCH = {} | PREF = {} ]", &search_path, &search_term, &pref_keys.concat())).green();
+    println!("{}", header);
 
     let options = MatchOptions {
         case_sensitive: current_prefs.case_sensitive,
@@ -124,15 +158,7 @@ fn main() {
 
     for entry in glob_with(&format!("{}{}{}", search_path, recursor_string, search_string), options).unwrap() {
         if let Ok(path) = entry {
-            if path.is_dir() & current_prefs.show_dirs {
-                println!("DIR  | {}", path.display())
-            } else if path.is_symlink() & current_prefs.show_files {
-                println!("LINK | {}", path.display())
-            } else if path.is_file() & current_prefs.show_files{
-                println!("FILE | {}", path.display())
-            } else if !path.is_dir() & !path.is_file() & !path.is_symlink() {
-                println!("???? | {}", path.display())
-            }
+            print_path(path, &current_prefs, &search_term)
         }
     }
 }
