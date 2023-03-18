@@ -19,11 +19,11 @@ fn print_path(path:PathBuf, current_prefs: &Pref, search_term: &String) {
         .replace(&section.clone(), &section.clone().blue().to_string());
 
     if path.is_dir() {
-        if current_prefs.show_dirs {println!("DIR  | {}", newpath)}
+        if current_prefs.show_dirs {println!("dir  | {}", newpath)}
     } else if path.is_symlink() {
-        if current_prefs.show_files {println!("LINK | {}", newpath)}
+        if current_prefs.show_files {println!("link | {}", newpath)}
     } else if path.is_file(){
-        if current_prefs.show_files {println!("FILE | {}", newpath)}
+        if current_prefs.show_files {println!("file | {}", newpath)}
     } else {
         println!("???? | {}", newpath)
     }
