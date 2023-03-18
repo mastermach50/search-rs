@@ -1,77 +1,38 @@
-use std::process::exit;
+use clap::{Parser};
 use colored::*;
 
-pub struct Pref {
+#[derive(Debug, Parser)]
+#[command(
+    about = ("Search-RS".green().bold().underline().to_string())+
+    "\nSearch for files or directories recursively.",
+    version,
+    author)]
+pub struct SearchArgs{
+    /// The directory to search in (default: . )
+    #[arg(name = "SEARCH_DIR")]
+    pub first_option: Option<String>,
+
+    /// The term to search for (default: * )
+    #[arg(name = "SEARCH_TERM")]
+    pub second_option: Option<String>,
+
+    /// Case sensitive (default: false)
+    #[arg(short, long = "case-sensitive", default_value_t = false)]
     pub case_sensitive: bool,
-    pub recursive: bool,
-    pub show_dirs: bool,
-    pub show_files: bool
-}
 
-pub fn parse_preferences(pref_keys: &Vec<String>) -> Pref {
-    // Parse preferences
-    let mut current_prefs = Pref{
-        case_sensitive: false,
-        recursive: true,
-        show_dirs: false,
-        show_files: false
-    };
+    /// Single directory (i.e no recursion) (default: false)
+    #[arg(short = 's', long = "single-directory", default_value_t = false)]
+    pub no_recursion: bool,
 
-    if pref_keys.contains(&String::from("--help")) | pref_keys.contains(&String::from("-h")) {
-        help()
-    }
-    if pref_keys.contains(&String::from("--version")) {
-        show_version()
-    }
-    if pref_keys.contains(&String::from("-c")) {
-        current_prefs.case_sensitive = true
-    }
-    if pref_keys.contains(&String::from("-s")) {
-        current_prefs.recursive = false
-    }
-    if pref_keys.contains(&String::from("-d")) {
-        current_prefs.show_dirs = true;
-    }
-    if pref_keys.contains(&String::from("-f")) {
-        current_prefs.show_files = true;
-    }
-    if !pref_keys.contains(&String::from("-f")) & !pref_keys.contains(&String::from("-d")) {
-        current_prefs.show_dirs = true;
-        current_prefs.show_files = true;
-    }
+    /// Show directories only (default: false)
+    #[arg(short = 'd', default_value_t = false)]
+    pub dirs_only: bool,
 
-    return current_prefs;
-}
+    /// Show files only (default: false)
+    #[arg(short = 'f', default_value_t = false)]
+    pub files_only: bool,
 
-
-fn help () {
-    println!("Search [by MasterMach50]
-    https://github.com/MasterMach50/search-rs
-    
-    Search for files or directories recursively.
-    
-    Format:
-        search [Directory] [Keyword] [Options]
-        search [Keyword] [Options]               (searches in cwd)
-        search [Options]                         (lists all files and directories in cwd)
-    
-    Options:
-        -c         Case Sensitive
-        -s         Single Directory (no recursion)
-    
-        -f         Show files only
-        -d         Show directories only
-        -f -d      Same as not using -d and -f
-        
-        --version  Show version details and exit
-        --help     Show Help and exit
-        -h         Same as --help");
-        exit(0);
-}
-
-
-fn show_version() {
-    let version = env!("CARGO_PKG_VERSION");
-    println!("Search by MasterMach50 | version {}", version.blue());
-    exit(0)
+    /// Show links only only (default: false)
+    #[arg(short = 'l', default_value_t = false)]
+    pub links_only: bool,
 }
