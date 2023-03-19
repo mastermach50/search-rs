@@ -13,6 +13,7 @@ pub struct SearchArgs{
     pub first_option: Option<String>,
 
     /// The term to search for (default: * )
+    /// ( * represents 0 or any number of characters)
     #[arg(name = "SEARCH_TERM")]
     pub second_option: Option<String>,
 
@@ -37,6 +38,6 @@ pub struct SearchArgs{
     pub links_only: bool,
 
     /// No decorations
-    #[arg(short = 'n', long, default_value_t = false)]
-    pub no_decorations: bool,
+    #[arg(short = 'n', long = "no-decorations", default_value_t = true)]
+    pub decorations: bool,
 }

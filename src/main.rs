@@ -22,6 +22,7 @@ fn main() {
     let mut recursion_str = "/**/";
     let mut pref_string = " ".to_string();
     let mut to_show = Showables{dirs:true, files: true, links: true};
+    let mut search_term_fmt = "*".to_string();
 
 
     // Change default values based on arguments
@@ -45,8 +46,8 @@ fn main() {
 
     // Set the search term and search directory
     if args.first_option.is_some() & args.second_option.is_some() {
-        search_term = args.second_option.unwrap();
         search_dir = args.first_option.unwrap();
+        search_term = args.second_option.unwrap();
     } else if args.first_option.is_some() & args.second_option.is_none() {
         search_term = args.first_option.unwrap();
     }
@@ -61,13 +62,21 @@ fn main() {
     if args.case_sensitive {
         pref_string += "case_sensitive ";
     }
+    if !args.decorations {
+        pref_string += "no_decorations ";
+    }
+
+    // Format search term
+    if search_term != "" {
+        search_term_fmt = search_term.clone();
+    }
 
     // Create a string to match to
-    let match_string = format!("{}{}*{}*", search_dir, recursion_str, search_term);
+    let match_string = format!("{}{}{}", search_dir, recursion_str, search_term_fmt);
 
 
     // Print the header
-    if !args.no_decorations {
+    if args.decorations {
         let header = format!("[ DIR = {} | SEARCH = {} | PREF ={}]", &search_dir, &search_term, &pref_string).green();
         println!("{}", header);
     }
@@ -85,32 +94,35 @@ fn main() {
     for path in glob_with(&match_string, options).unwrap().flatten() {
         // Print the coloured paths
         if path.is_file() & to_show.files{
-            print_path(path, &search_term, &args.no_decorations, "file");
+            print_path(path, &search_term, &args.decorations, "file");
             result_count +=1;
         } else if path.is_dir() & to_show.dirs {
-            print_path(path, &search_term, &args.no_decorations, "dir ");
+            print_path(path, &search_term, &args.decorations, "dir ");
             result_count +=1;
         } else if path.is_symlink() & to_show.links{
-            print_path(path, &search_term, &args.no_decorations, "link");
+            print_path(path, &search_term, &args.decorations, "link");
             result_count +=1;
         } else if !path.is_file() & !path.is_dir() & !path.is_symlink(){
-            print_path(path, &search_term, &args.no_decorations, "????");
+            print_path(path, &search_term, &args.decorations, "????");
             result_count +=1;
         }
     }
     // Print the total number of results
-    if !args.no_decorations {
+    if args.decorations {
         let result_num = format!("[{} Results]", &result_count.to_string()).green();
         println!("{}", result_num);
     }
 
 }
 
-fn print_path(path:PathBuf, search_term: &String, no_decorations: &bool, path_type: &str) {
+fn print_path(path:PathBuf, search_term: &String, decorations: &bool, path_type: &str) {
 
-    if !no_decorations {
+    if decorations.to_owned() {
         // Create a regex using the search term
-        let re = Regex::new(&format!("(?i){}", &search_term)).unwrap();
+        let replacable_fmt = &search_term
+                                        .replace("*", "")
+                                        .replace("?", "");
+        let re = Regex::new(&format!("(?i){}", replacable_fmt)).unwrap();
 
         // Match the section in the path string with the search term using the regex created
         let path_str = &path.display().to_string();
