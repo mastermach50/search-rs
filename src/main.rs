@@ -118,7 +118,7 @@ fn print_path(path:PathBuf, search_term: &String, no_decorations: &bool, path_ty
 
         // Replace the matched section with a colorized version of it
         let newpath = &path.display().to_string()
-            .replace(&section, &section.blue().to_string());
+            .replace(section, &section.blue().to_string());
 
         // Print the coloured path
         println!("{} | {}", path_type, newpath);
