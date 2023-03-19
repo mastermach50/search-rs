@@ -122,7 +122,11 @@ fn print_path(path:PathBuf, search_term: &String, decorations: &bool, path_type:
         let replacable_fmt = &search_term
                                         .replace("*", "")
                                         .replace("?", "");
-        let re = Regex::new(&format!("(?i){}", replacable_fmt)).unwrap();
+        let re = match Regex::new(&format!("(?i){}", replacable_fmt)){
+            Ok(regex) => regex,
+            Err(_) => {println!("[Regex parse error, hilighting disabled]");
+                        Regex::new("").unwrap()}
+        };
 
         // Match the section in the path string with the search term using the regex created
         let path_str = &path.display().to_string();
