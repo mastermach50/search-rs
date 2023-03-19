@@ -62,7 +62,7 @@ fn main() {
     if args.case_sensitive {
         pref_string += "case_sensitive ";
     }
-    if !args.decorations {
+    if args.no_decorations {
         pref_string += "no_decorations ";
     }
 
@@ -76,7 +76,7 @@ fn main() {
 
 
     // Print the header
-    if args.decorations {
+    if !args.no_decorations {
         let header = format!("[ DIR = {} | SEARCH = {} | PREF ={}]", &search_dir, &search_term, &pref_string).green();
         println!("{}", header);
     }
@@ -94,30 +94,30 @@ fn main() {
     for path in glob_with(&match_string, options).unwrap().flatten() {
         // Print the coloured paths
         if path.is_file() & to_show.files{
-            print_path(path, &search_term, &args.decorations, "file");
+            print_path(path, &search_term, &args.no_decorations, "file");
             result_count +=1;
         } else if path.is_dir() & to_show.dirs {
-            print_path(path, &search_term, &args.decorations, "dir ");
+            print_path(path, &search_term, &args.no_decorations, "dir ");
             result_count +=1;
         } else if path.is_symlink() & to_show.links{
-            print_path(path, &search_term, &args.decorations, "link");
+            print_path(path, &search_term, &args.no_decorations, "link");
             result_count +=1;
         } else if !path.is_file() & !path.is_dir() & !path.is_symlink(){
-            print_path(path, &search_term, &args.decorations, "????");
+            print_path(path, &search_term, &args.no_decorations, "????");
             result_count +=1;
         }
     }
     // Print the total number of results
-    if args.decorations {
+    if !args.no_decorations {
         let result_num = format!("[{} Results]", &result_count.to_string()).green();
         println!("{}", result_num);
     }
 
 }
 
-fn print_path(path:PathBuf, search_term: &String, decorations: &bool, path_type: &str) {
+fn print_path(path:PathBuf, search_term: &String, no_decorations: &bool, path_type: &str) {
 
-    if decorations.to_owned() {
+    if !no_decorations.to_owned() {
         // Create a regex using the search term
         let replacable_fmt = &search_term
                                         .replace("*", "")

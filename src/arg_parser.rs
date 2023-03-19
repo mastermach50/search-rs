@@ -39,6 +39,6 @@ pub struct SearchArgs{
     pub links_only: bool,
 
     /// No decorations
-    #[arg(short = 'n', long = "no-decorations", default_value_t = true)]
-    pub decorations: bool,
+    #[arg(short = 'n', long = "no-decorations", default_value_t = false)]
+    pub no_decorations: bool,
 }
