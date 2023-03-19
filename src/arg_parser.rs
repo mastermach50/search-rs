@@ -1,4 +1,4 @@
-use clap::{Parser};
+use clap::Parser;
 use colored::*;
 
 #[derive(Debug, Parser)]
@@ -24,15 +24,19 @@ pub struct SearchArgs{
     #[arg(short = 's', long = "single-directory", default_value_t = false)]
     pub no_recursion: bool,
 
-    /// Show directories only (default: false)
+    /// Show directories only
     #[arg(short = 'd', default_value_t = false)]
     pub dirs_only: bool,
 
-    /// Show files only (default: false)
+    /// Show files only
     #[arg(short = 'f', default_value_t = false)]
     pub files_only: bool,
 
-    /// Show links only only (default: false)
+    /// Show links only only
     #[arg(short = 'l', default_value_t = false)]
     pub links_only: bool,
+
+    /// No decorations
+    #[arg(short = 'n', long, default_value_t = false)]
+    pub no_decorations: bool,
 }
