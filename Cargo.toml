@@ -1,6 +1,6 @@
 [package]
 name = "search-rs"
-version = "1.1.1"
+version = "1.1.2"
 edition = "2021"
 authors = ["MasterMach50"]
 repository = "https://github.com/MasterMach50/search-rs"
