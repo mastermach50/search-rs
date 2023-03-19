@@ -4,7 +4,9 @@ use colored::*;
 #[derive(Debug, Parser)]
 #[command(
     about = ("Search-RS".green().bold().underline().to_string())+
-    "\nSearch for files or directories recursively.",
+    "\nSearch for files or directories directly from the terminal recursively.\n
+    ( * represents 0 or any number of characters )
+    ( ? represents 1 character )",
     version,
     author)]
 pub struct SearchArgs{
@@ -13,7 +15,6 @@ pub struct SearchArgs{
     pub first_option: Option<String>,
 
     /// The term to search for (default: * )
-    /// ( * represents 0 or any number of characters)
     #[arg(name = "SEARCH_TERM")]
     pub second_option: Option<String>,
 
