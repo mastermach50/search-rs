@@ -18,11 +18,11 @@ pub struct SearchArgs{
     #[arg(name = "SEARCH_TERM")]
     pub second_option: Option<String>,
 
-    /// Case sensitive (default: false)
+    /// Case sensitive
     #[arg(short, long = "case-sensitive", default_value_t = false)]
     pub case_sensitive: bool,
 
-    /// Single directory (i.e no recursion) (default: false)
+    /// Single directory (i.e no recursion)
     #[arg(short = 's', long = "single-directory", default_value_t = false)]
     pub no_recursion: bool,
 
