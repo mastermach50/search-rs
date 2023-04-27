@@ -11,8 +11,8 @@ A simple cli search utility written in rust.
 |:---:|:---:|:---|
 |-h|--help|Show the help command|
 |-V|--version|Show the version info|
-|-c|--case-sensitive|Case sensitive (default: false)|
-|-s|--single-directory|Single directory (i.e no recursion) (default: false)|
+|-c|--case-sensitive|Case sensitive|
+|-s|--single-directory|Single directory (i.e no recursion)|
 |-d|| Show directories only|
 |-f||Show files only|
 |-l||Show links only only|
