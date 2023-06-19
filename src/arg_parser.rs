@@ -9,7 +9,7 @@ use colored::*;
     ( ? represents 1 character )",
     version,
     author)]
-pub struct SearchArgs{
+pub struct SearchArgs {
     /// The directory to search in (default: . )
     #[arg(name = "SEARCH_DIR")]
     pub first_option: Option<String>,

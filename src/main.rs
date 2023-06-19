@@ -1,16 +1,17 @@
 mod arg_parser;
 
-use glob::{glob_with, MatchOptions};
-use std::path::PathBuf;
-use regex::Regex;
 use arg_parser::SearchArgs;
 use clap::Parser;
 use colored::*;
+use glob::{glob_with, MatchOptions};
+use regex::Regex;
+use std::path::PathBuf;
 
 struct Showables {
-    dirs : bool,
+    dirs: bool,
     files: bool,
-    links: bool}
+    links: bool,
+}
 
 fn main() {
     let args = SearchArgs::parse();
@@ -21,9 +22,12 @@ fn main() {
     let mut search_dir = ".".to_string();
     let mut recursion_str = "/**/";
     let mut pref_string = " ".to_string();
-    let mut to_show = Showables{dirs:true, files: true, links: true};
+    let mut to_show = Showables {
+        dirs: true,
+        files: true,
+        links: true,
+    };
     let mut search_term_fmt = "*".to_string();
-
 
     // Change default values based on arguments
 
@@ -34,15 +38,18 @@ fn main() {
         to_show.files = false;
         to_show.links = false;
         if args.files_only {
-            to_show.files  = true;
-            pref_string += "files_only "};
-        if args.dirs_only  {
+            to_show.files = true;
+            pref_string += "files_only "
+        };
+        if args.dirs_only {
             to_show.dirs = true;
-            pref_string += "dirs_only "};
+            pref_string += "dirs_only "
+        };
         if args.links_only {
             to_show.links = true;
-            pref_string += "links_only "};
-        }
+            pref_string += "links_only "
+        };
+    }
 
     // Set the search term and search directory
     if args.first_option.is_some() & args.second_option.is_some() {
@@ -74,10 +81,13 @@ fn main() {
     // Create a string to match to
     let match_string = format!("{}{}{}", search_dir, recursion_str, search_term_fmt);
 
-
     // Print the header
     if !args.no_decorations {
-        let header = format!("[ DIR = {} | SEARCH = {} | PREF ={}]", &search_dir, &search_term, &pref_string).green();
+        let header = format!(
+            "[ DIR = {} | SEARCH = {} | PREF ={}]",
+            &search_dir, &search_term, &pref_string
+        )
+        .green();
         println!("{}", header);
     }
 
@@ -93,18 +103,18 @@ fn main() {
     // GLOB
     for path in glob_with(&match_string, options).unwrap().flatten() {
         // Print the coloured paths
-        if path.is_file() & to_show.files{
+        if path.is_file() & to_show.files {
             print_path(path, &search_term, &args.no_decorations, "file");
-            result_count +=1;
+            result_count += 1;
         } else if path.is_dir() & to_show.dirs {
             print_path(path, &search_term, &args.no_decorations, "dir ");
-            result_count +=1;
-        } else if path.is_symlink() & to_show.links{
+            result_count += 1;
+        } else if path.is_symlink() & to_show.links {
             print_path(path, &search_term, &args.no_decorations, "link");
-            result_count +=1;
-        } else if !path.is_file() & !path.is_dir() & !path.is_symlink(){
+            result_count += 1;
+        } else if !path.is_file() & !path.is_dir() & !path.is_symlink() {
             print_path(path, &search_term, &args.no_decorations, "????");
-            result_count +=1;
+            result_count += 1;
         }
     }
     // Print the total number of results
@@ -112,20 +122,18 @@ fn main() {
         let result_num = format!("[{} Results]", &result_count.to_string()).green();
         println!("{}", result_num);
     }
-
 }
 
-fn print_path(path:PathBuf, search_term: &String, no_decorations: &bool, path_type: &str) {
-
+fn print_path(path: PathBuf, search_term: &String, no_decorations: &bool, path_type: &str) {
     if !no_decorations.to_owned() {
         // Create a regex using the search term
-        let replacable_fmt = &search_term
-                                        .replace("*", "")
-                                        .replace("?", "");
-        let re = match Regex::new(&format!("(?i){}", replacable_fmt)){
+        let replacable_fmt = &search_term.replace("*", "").replace("?", "");
+        let re = match Regex::new(&format!("(?i){}", replacable_fmt)) {
             Ok(regex) => regex,
-            Err(_) => {println!("[Regex parse error, hilighting disabled]");
-                        Regex::new("").unwrap()}
+            Err(_) => {
+                println!("[Regex parse error, hilighting disabled]");
+                Regex::new("").unwrap()
+            }
         };
 
         // Match the section in the path string with the search term using the regex created
@@ -133,13 +141,14 @@ fn print_path(path:PathBuf, search_term: &String, no_decorations: &bool, path_ty
         let section = re.find(path_str).unwrap().as_str();
 
         // Replace the matched section with a colorized version of it
-        let newpath = &path.display().to_string()
+        let newpath = &path
+            .display()
+            .to_string()
             .replace(section, &section.blue().to_string());
 
         // Print the coloured path
         println!("{} | {}", path_type, newpath);
-    } else { 
+    } else {
         println!("{}", &path.display().to_string());
     }
-
 }
